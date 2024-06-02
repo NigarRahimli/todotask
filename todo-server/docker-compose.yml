@@ -1,0 +1,34 @@
+    version: "3.9"
+
+    services:
+      node_app:
+        container_name: node_app
+        build: .
+        image: nigar02/node_live_app
+        ports:
+          - "3000:3000"
+        environment:
+          - PG_DB=todo_live_db
+          - PG_USER=nigar
+          - PG_PASSWORD=12345
+          - PG_HOST=todo_db
+          - JWT_SECRET=your_jwt_secret_key
+          - JWT_EXPIRES_IN=1h
+        restart: always
+        depends_on:
+          - todo_db
+
+      todo_db:
+        container_name: todo_db
+        image: postgres:12
+        ports:
+          - "5432:5432"
+        environment:
+          - POSTGRES_DB=todo_live_db
+          - POSTGRES_USER=nigar
+          - POSTGRES_PASSWORD=12345
+        volumes:
+          - todo_db_data:/var/lib/postgresql/data
+
+    volumes:
+      todo_db_data: {}
