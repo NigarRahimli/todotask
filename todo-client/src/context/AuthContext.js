@@ -6,7 +6,8 @@ export const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     token: localStorage.getItem('token'),
-    user: null,
+    userId: localStorage.getItem('userId'),
+    loading: true, // Add loading state
   });
 
   useEffect(() => {
@@ -15,19 +16,26 @@ const AuthProvider = ({ children }) => {
     } else {
       delete axios.defaults.headers.common['Authorization'];
     }
+    setAuthState(prevState => ({ ...prevState, loading: false })); // Set loading to false after initialization
   }, [authState.token]);
 
   const login = async (email, password) => {
-    const response = await axios.post('http://localhost:3000/users/login', { email, password });
-    const { token, userId } = response.data;
-    setAuthState({ token, user: { id: userId, email } });
-    
-    localStorage.setItem('token', token);
+    try {
+      const response = await axios.post('http://localhost:3000/users/login', { email, password });
+      const { token, userId } = response.data;
+      setAuthState({ token, user: { id: userId, email }, loading: false }); // Set loading to false after successful login
+      localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);
+    } catch (error) {
+      console.error('Login failed:', error.message);
+      // Handle login failure (e.g., display error message)
+    }
   };
 
   const logout = () => {
-    setAuthState({ token: null, user: null });
+    setAuthState({ token: null, user: null, loading: false }); // Set loading to false after logout
     localStorage.removeItem('token');
+    localStorage.removeItem('userId'); 
   };
 
   const authContextValue = {
@@ -38,7 +46,7 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={authContextValue}>
-      {children}
+      {!authState.loading && children} {/* Render children only when loading is false */}
     </AuthContext.Provider>
   );
 };

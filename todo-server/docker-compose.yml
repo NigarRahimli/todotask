@@ -11,15 +11,15 @@
           - PG_DB=todo_live_db
           - PG_USER=nigar
           - PG_PASSWORD=12345
-          - PG_HOST=todo_db
+          - PG_HOST=tododb
           - JWT_SECRET=your_jwt_secret_key
           - JWT_EXPIRES_IN=1h
         restart: always
         depends_on:
-          - todo_db
+          - tododb
 
-      todo_db:
-        container_name: todo_db
+      tododb:
+        container_name: tododb
         image: postgres:12
         ports:
           - "5432:5432"
@@ -28,7 +28,7 @@
           - POSTGRES_USER=nigar
           - POSTGRES_PASSWORD=12345
         volumes:
-          - todo_db_data:/var/lib/postgresql/data
+          - tododb_data:/var/lib/postgresql/data
 
     volumes:
-      todo_db_data: {}
+      tododb_data: {}

@@ -20,6 +20,11 @@ const Todo = db.define("todo", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  isCompleted: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 });
 
 module.exports = Todo;

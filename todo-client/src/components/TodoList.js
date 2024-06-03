@@ -1,23 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
-  const { token } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem('token'); 
+    const userId = localStorage.getItem('userId');
+
     const fetchTodos = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:3000/todos", {
+        const response = await axios.get(`http://localhost:3000/todos/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("Todos response:", response.data);
-        setTodos(response.data.todos); // Extract the todos array from the response
+        setTodos(response.data.todos); 
         setLoading(false);
       } catch (error) {
         console.error("Error fetching todos:", error);
@@ -27,27 +28,29 @@ const TodoList = () => {
     };
 
     fetchTodos();
-  }, [token]);
+  }, []);
 
   const handleAddTodo = async () => {
+    const token = localStorage.getItem('token'); 
+    const userId = localStorage.getItem('userId')
     try {
       const response = await axios.post(
-        "http://localhost:3000/todos",
-        { title: newTodo, userId: 1 }, // Pass userId directly in the object
+        `http://localhost:3000/todos/`, 
+        { title: newTodo,
+          userId:userId
+         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // Update the todos state to include the new todo immediately
-      setTodos((prevTodos) => [...prevTodos, response.data.todo]); // Use response.data.todo to access the newly created todo
+ 
+      setTodos((prevTodos) => [...prevTodos, response.data.todo]); 
       setNewTodo("");
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError("You are not authenticated. Please log in again.");
-        // Handle authentication error, e.g., redirect to login page
       } else {
         console.error("Error adding todo:", error);
-        // Handle other errors
       }
     }
   };
