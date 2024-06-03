@@ -23,17 +23,16 @@ const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post('http://localhost:3000/users/login', { email, password });
       const { token, userId } = response.data;
-      setAuthState({ token, user: { id: userId, email }, loading: false }); // Set loading to false after successful login
+      setAuthState({ token, user: { id: userId, email }, loading: false }); 
       localStorage.setItem('token', token);
       localStorage.setItem('userId', userId);
     } catch (error) {
       console.error('Login failed:', error.message);
-      // Handle login failure (e.g., display error message)
     }
   };
 
   const logout = () => {
-    setAuthState({ token: null, user: null, loading: false }); // Set loading to false after logout
+    setAuthState({ token: null, user: null, loading: false }); 
     localStorage.removeItem('token');
     localStorage.removeItem('userId'); 
   };
