@@ -62,18 +62,15 @@ exports.updateTodo = (req, res, next) => {
   const updatedTitle = req.body.title;
   const updatedDescription = req.body.description;
   const updatedUserId = req.body.userId;
-  const isCompleted = req.body.isCompleted; // Optionally update completion status
+  const isCompleted = req.body.isCompleted; 
 
   Todo.findByPk(todoId)
     .then((todo) => {
       if (!todo) {
         return res.status(404).json({ message: "ToDo not found!" });
       }
-      // Update todo attributes
       todo.title = updatedTitle;
       todo.description = updatedDescription;
-      todo.userId = updatedUserId;
-      // If isCompleted is provided in the request body, update it
       if (isCompleted !== undefined) {
         todo.isCompleted = isCompleted;
       }

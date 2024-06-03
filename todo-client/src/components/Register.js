@@ -6,8 +6,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -15,19 +13,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { FormHelperText } from '@mui/material';
 
 const defaultTheme = createTheme();
 
@@ -36,6 +22,7 @@ export default function SignUp() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState([]);
 
   const navigate = useNavigate();
 
@@ -45,6 +32,13 @@ export default function SignUp() {
     console.log('Name:', name);
     console.log('Email:', email);
     console.log('Password:', password);
+
+    // Check for password errors before submitting
+    if (passwordError.length > 0) {
+      console.error('Password is invalid');
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:3000/users/register', { name, email, password });
       console.log('Registration successful:', response.data);
@@ -52,6 +46,25 @@ export default function SignUp() {
     } catch (error) {
       console.error('Error during registration:', error.response ? error.response.data : error.message);
     }
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    const errors = [];
+
+    if (newPassword.length < 8) {
+      errors.push('Password must be at least 8 characters long.');
+    }
+    if (!/[A-Za-z]/.test(newPassword)) {
+      errors.push('Password must contain at least one letter.');
+    }
+    if (!/\d/.test(newPassword)) {
+      errors.push('Password must contain at least one number.');
+    }
+
+    setPasswordError(errors);
   };
 
   return (
@@ -121,14 +134,15 @@ export default function SignUp() {
                   id="password"
                   autoComplete="new-password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
+                  error={passwordError.length > 0}
+               
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
+                <Box sx={{ minHeight: '50px' }}> 
+              {passwordError.length > 0 && (
+                <FormHelperText error>{passwordError.join(' ')}</FormHelperText>
+              )}
+            </Box>
               </Grid>
             </Grid>
             <Button
@@ -148,7 +162,6 @@ export default function SignUp() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );
