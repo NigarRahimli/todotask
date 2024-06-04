@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ const TodoList = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching todos:", error);
-        setError("Error fetching todos. Please try again later.");
+        setError("User not found."); 
         setLoading(false);
       }
     };
@@ -91,8 +91,9 @@ const TodoList = () => {
     setEditTodoId(null);
     setEditTodoTitle("");
   };
-const { logout } = useContext(AuthContext);
-const navigate = useNavigate();
+
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const handleLogout = () => {
     logout();
     navigate('/register'); 
@@ -100,18 +101,30 @@ const navigate = useNavigate();
 
   return (
     <div className="max-w-xl mx-auto p-5 rounded-lg bg-gray-100 shadow-md">
-      <div className="flex justify-between items-center mb-5">
+      
+      {loading ? (
+        <>       
+        <div className="flex justify-between items-center mb-5">
         <h2 className="text-2xl font-bold text-gray-700">Todos</h2>
         <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Logout
         </button>
       </div>
-      {loading ? (
         <p className="text-center text-lg text-gray-600">Loading todos...</p>
-      ) : error ? (
-        <p className="text-center text-lg text-red-500">{error}</p>
+        </>
+      ) : error ? ( 
+        <div className="m-[100px] text-center text-lg text-black-500">
+          <p>{error}</p>
+          <p>You can return to <a className=" text-blue-600" href="/"> Welcome Page</a></p>
+        </div>
       ) : (
         <>
+          <div className="flex justify-between items-center mb-5">
+        <h2 className="text-2xl font-bold text-gray-700">Todos</h2>
+        <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+          Logout
+        </button>
+      </div>
           <div className="flex justify-center mb-5">
             <input
               type="text"

@@ -21,6 +21,7 @@ export default function SignIn() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState([]);
+  const [loginError, setLoginError] = React.useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -32,8 +33,12 @@ export default function SignIn() {
       return;
     }
 
-    await login(email, password);
-    navigate('/todos'); // Navigate to todos page after signing in
+    try {
+      await login(email, password);
+      navigate('/todos'); 
+    } catch (error) {
+      setLoginError(error.message); // Set the login error message from the thrown error
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -104,7 +109,9 @@ export default function SignIn() {
                 <FormHelperText error>{passwordError.join(' ')}</FormHelperText>
               )}
             </Box>
-          
+            {loginError && (
+              <FormHelperText error>{loginError}</FormHelperText>
+            )}
             <Button
               type="submit"
               fullWidth

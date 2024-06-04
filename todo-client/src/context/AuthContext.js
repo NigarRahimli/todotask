@@ -7,7 +7,7 @@ const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     token: localStorage.getItem('token'),
     userId: localStorage.getItem('userId'),
-    loading: true, // Add loading state
+    loading: true, 
   });
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const AuthProvider = ({ children }) => {
     } else {
       delete axios.defaults.headers.common['Authorization'];
     }
-    setAuthState(prevState => ({ ...prevState, loading: false })); // Set loading to false after initialization
+    setAuthState(prevState => ({ ...prevState, loading: false })); 
   }, [authState.token]);
 
   const login = async (email, password) => {
@@ -28,8 +28,10 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem('userId', userId);
     } catch (error) {
       console.error('Login failed:', error.message);
+      throw new Error('Email address or password is incorrect.');
     }
   };
+  
 
   const logout = () => {
     setAuthState({ token: null, user: null, loading: false }); 

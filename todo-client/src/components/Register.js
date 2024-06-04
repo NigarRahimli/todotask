@@ -23,6 +23,7 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState([]);
+  const [registrationError, setRegistrationError] = useState('');
 
   const navigate = useNavigate();
 
@@ -44,7 +45,9 @@ export default function SignUp() {
       console.log('Registration successful:', response.data);
       navigate('/login'); // Navigate to the login page after successful registration
     } catch (error) {
-      console.error('Error during registration:', error.response ? error.response.data : error.message);
+      const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+      setRegistrationError(errorMessage);
+      console.error('Error during registration:', errorMessage);
     }
   };
 
@@ -136,15 +139,17 @@ export default function SignUp() {
                   value={password}
                   onChange={handlePasswordChange}
                   error={passwordError.length > 0}
-               
                 />
-                <Box sx={{ minHeight: '50px' }}> 
-              {passwordError.length > 0 && (
-                <FormHelperText error>{passwordError.join(' ')}</FormHelperText>
-              )}
-            </Box>
+                <Box sx={{ minHeight: '50px' }}>
+                  {passwordError.length > 0 && (
+                    <FormHelperText error>{passwordError.join(' ')}</FormHelperText>
+                  )}
+                </Box>
               </Grid>
             </Grid>
+            {registrationError && (
+              <FormHelperText error>{registrationError}</FormHelperText>
+            )}
             <Button
               type="submit"
               fullWidth
